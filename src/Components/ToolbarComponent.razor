@@ -1,0 +1,70 @@
+﻿
+<RgfToolbarComponent @ref="_rgfToolbarRef" EntityParameters="EntityParameters">
+    <ToolbarTemplate Context="RgfToolbar">
+        <TelerikToolBar Class="toolbar-size" Adaptive="false">
+            @if (Manager.EntityDesc.Options.GetBoolValue("RGO_ClientMode") != true)
+            {
+                <ToolBarButtonGroup>
+                    <ToolBarButton Title="@RecroDict.GetRgfUiString("Refresh")" Icon="SvgIcon.ArrowRotateCw"
+                                   OnClick="() => RgfToolbar.OnToolbarCommand(ToolbarAction.Refresh)" />
+                    @if (Manager.EntityDesc.Options.GetBoolValue("RGO_NoFilter") != true)
+                    {
+                        <ToolBarButton Title="@RecroDict.GetRgfUiString("Filter")" Icon="SvgIcon.Filter"
+                                       ThemeColor="@(RgfToolbar.IsFiltered ? ThemeConstants.Button.ThemeColor.Success : ThemeConstants.Button.ThemeColor.Base)"
+                                       OnClick="() => RgfToolbar.OnToolbarCommand(ToolbarAction.ShowFilter)" />
+                    }
+                </ToolBarButtonGroup>
+            }
+            <ToolBarButtonGroup>
+                @if (Manager.EntityDesc.Options.GetBoolValue("RGO_NoDetails") != true)
+                {
+                    if (RgfToolbar.BasePermissions.Add)
+                    {
+                        <ToolBarButton Title="@RecroDict.GetRgfUiString("New")" Icon="SvgIcon.Plus"
+                                       OnClick="() => RgfToolbar.OnToolbarCommand(ToolbarAction.Add)" />
+                    }
+                    if (RgfToolbar.BasePermissions.Edit)
+                    {
+                        <ToolBarButton Title="@RecroDict.GetRgfUiString("Modify")" Icon="SvgIcon.Pencil" Enabled="RgfToolbar.IsSingleSelectedRow"
+                                       OnClick="() => RgfToolbar.OnToolbarCommand(ToolbarAction.Edit)" />
+                    }
+                    else if (RgfToolbar.BasePermissions.Read)
+                    {
+                        <ToolBarButton Title="@RecroDict.GetRgfUiString("Details")" Icon="SvgIcon.DetailSection" Enabled="RgfToolbar.IsSingleSelectedRow"
+                                       OnClick="() => RgfToolbar.OnToolbarCommand(ToolbarAction.Read)" />
+                    }
+                }
+                @if (RgfToolbar.BasePermissions.Delete)
+                {
+                    <ToolBarButton Title="@RecroDict.GetRgfUiString("Delete")" Icon="SvgIcon.Trash" Enabled="RgfToolbar.IsSingleSelectedRow"
+                                   OnClick="() => RgfToolbar.OnDelete()" />
+                }
+            </ToolBarButtonGroup>
+            @if (RgfToolbar.SettingsMenu != null)
+            {
+                <ToolBarTemplateItem>
+                    @* <TelerikButton Title="@RecroDict.GetRgfUiString("Setup")" Icon="SvgIcon.Gear" /> *@
+                    @RgfToolbar.CreateSettingsMenu(SvgIcon.Gear)
+                </ToolBarTemplateItem>
+            }
+            @if (RgfToolbar.SelectParam != null && Manager.EntityDesc.Options.GetBoolValue("RGO_SelectMode") == true)
+            {
+                <ToolBarButton Title="@RecroDict.GetRgfUiString("Select")" Icon="SvgIcon.Link" Enabled="RgfToolbar.IsSingleSelectedRow"
+                               ThemeColor="@(RgfToolbar.IsSingleSelectedRow ? ThemeConstants.Button.ThemeColor.Success : ThemeConstants.Button.ThemeColor.Base)"
+                               OnClick="() => RgfToolbar.OnToolbarCommand(ToolbarAction.Select)" />
+            }
+        </TelerikToolBar>
+    </ToolbarTemplate>
+</RgfToolbarComponent>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfEntityParameters EntityParameters { get; set; } = null!;
+
+    private IRgManager Manager => EntityParameters.Manager!;
+    private RgfToolbarParameters ToolbarParameters { get => EntityParameters.ToolbarParameters; }
+    private IRecroDictService RecroDict => Manager.RecroDict;
+
+    private RgfToolbarComponent _rgfToolbarRef { get; set; } = null!;
+}

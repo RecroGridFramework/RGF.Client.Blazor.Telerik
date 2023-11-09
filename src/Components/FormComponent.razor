@@ -1,0 +1,92 @@
+﻿
+<RgfFormComponent @ref="_rgfFormRef" EntityParameters="EntityParameters"
+                  FormGroupLayoutTemplate="FormGroupLayoutTemplate"
+                  FormItemLayoutTemplate="FormItemLayoutTemplate">
+    <FormTemplate Context="RgfForm">
+        <EditForm EditContext="RgfForm.CurrentEditContext">
+            <TelerikTabStrip PersistTabContent="true">
+                @foreach (var tab in RgfForm.FormData.FormTabs)
+                {
+                    <TabStripTab Title="@tab.Title">
+                        @foreach (var group in tab.Groups)
+                        {
+                            if (!string.IsNullOrEmpty(group.Title))
+                            {
+                                <h3>@group.Title</h3>
+                            }
+                            @RgfForm.GetFormGroupLayoutTemplate(new RgfFormGroupLayoutParameters(RgfForm, group))
+                        }
+                    </TabStripTab>
+                }
+            </TelerikTabStrip>
+            @RgfForm.GetFormValidationTemplate()
+        </EditForm>
+    </FormTemplate>
+
+    <FormItemTemplate>
+        <FormItemComponent FormItemParameters="context" />
+    </FormItemTemplate>
+
+    <FormValidationTemplate>
+        <TelerikValidationSummary />
+    </FormValidationTemplate>
+
+</RgfFormComponent>
+
+@inject IJSRuntime _jsRuntime
+@code {
+
+        [Parameter, EditorRequired]
+        public RgfEntityParameters EntityParameters { get; set; } = null!;
+
+    private IRgManager Manager => EntityParameters.Manager!;
+    private RgfFormParameters FormParameters { get => EntityParameters.FormParameters; }
+    protected IRecroDictService RecroDict => Manager.RecroDict;
+
+    private RgfFormComponent _rgfFormRef { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        //(2023.08.22) Support field css class from FieldCssClassProvider => Unplanned
+        //https://feedback.telerik.com/blazor/1564498-support-field-css-class-from-fieldcssclassprovider
+
+        FormParameters.ErrorCssClass = FormParameters.ErrorCssClass ?? "k-invalid k-form-error";
+        FormParameters.ModifiedCssClass = FormParameters.ModifiedCssClass ?? "k-valid";
+    }
+
+    // public RenderFragment<RgfFormGroupLayoutParameters> FormGroupLayoutTemplate => (param) =>
+    // @<TelerikGridLayout RowSpacing="1rem" ColumnSpacing="1rem">
+    //     <GridLayoutColumns>
+    //         @for (int max = param.FormGroup.FlexColumnWidth == 12 ? 1 : 2, i = 0; i < max; i++)
+    //         {
+    //             // <GridLayoutColumn Width="@($"{Math.Round(100.0 / max, 2)}%")" />
+    //             <GridLayoutColumn Width="auto" />
+    //         }
+    //     </GridLayoutColumns>
+    //     <GridLayoutItems>
+    //         @foreach (var prop in param.FormGroup.Properties)
+    //         {
+    //             @param.FormComponent.GetFormItemLayoutTemplate(new RgfFormItemParameters(_rgfFormRef, param.FormGroup, prop))
+    //         }
+    //     </GridLayoutItems>
+    // </TelerikGridLayout>;
+
+    public RenderFragment<RgfFormGroupLayoutParameters> FormGroupLayoutTemplate => (param) =>
+        param.FormComponent.DefaultFormGroupLayoutTemplate(param);
+
+    // public RenderFragment<RgfFormItemParameters> FormItemLayoutTemplate => (param) =>
+    // @<GridLayoutItem>
+    //     <div name="@param.Property.ClientName" class="@param.CssClass">
+    //         @if (!string.IsNullOrEmpty(param.Property.PreElement))
+    //         {
+    //             @((MarkupString)param.Property.PreElement)
+    //         }
+    //         @param.FormComponent.GetFormItemTemplate(param)
+    //     </div>
+    // </GridLayoutItem>;
+
+    public RenderFragment<RgfFormItemParameters> FormItemLayoutTemplate => (param) =>
+        param.FormComponent.DefaultFormItemLayoutTemplate(param);
+}

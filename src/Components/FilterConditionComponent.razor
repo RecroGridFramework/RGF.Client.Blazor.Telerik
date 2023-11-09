@@ -1,0 +1,180 @@
+﻿
+<ul class="list-unstyled">
+    @for (int idx = 0; idx < Condition.Conditions?.Count; idx++)
+    {
+        var item = Condition.Conditions[idx];
+        <li>
+            <div class="k-display-flex">
+                <div class="p-1">
+                    <TelerikComboBox ValueField="Key" TextField="Value" @bind-Value="item.LogicalOperator" Enabled="idx != 0" Data="LogicalOperators" ClearButton="false" Width="78px">
+                        <ComboBoxSettings>
+                            <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
+                        </ComboBoxSettings>
+                    </TelerikComboBox>
+                </div>
+                <div class="p-1">
+                    <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Icon="SvgIcon.Trash" OnClick="() => OnRemoveCondition(item)" />
+                </div>
+                <div class="p-1">
+                    <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Icon="SvgIcon.Css" OnClick="() => OnAddBracket(item)" />
+                </div>
+                @if (item.Conditions != null)
+                {
+                    <div class="p-1">
+                        <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Warning" OnClick="() => OnRemoveBracket(item)" Title="@RecroDict.GetRgfUiString("Delete")">
+                            <sup>@item.ClientId</sup><span>(</span>
+                        </TelerikButton>
+                    </div>
+                }
+                else
+                {
+                    <div class="p-1">
+                        <TelerikComboBox TValue="int" TItem="KeyValuePair<int, string>" ValueField="Key" TextField="Value"
+                                         Value="item.PropertyId" Data="Columns" ValueChanged="(value) => OnChangeProperty(value, item)" ClearButton="false">
+                            <ComboBoxSettings>
+                                <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
+                            </ComboBoxSettings>
+                        </TelerikComboBox>
+                    </div>
+                    <div class="p-1">
+                        <TelerikComboBox TValue="RgfFilter.QueryOperator" TItem="KeyValuePair<RgfFilter.QueryOperator, string>" ValueField="Key" TextField="Value"
+                                         Value="item.QueryOperator" Data="GetQueryOperators(item)" ValueChanged="(value) => OnChangeQueryOperator(value, item)" ClearButton="false">
+                            <ComboBoxSettings>
+                                <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
+                            </ComboBoxSettings>
+                        </TelerikComboBox>
+                    </div>
+                    @if (!(new[] { RgfFilter.QueryOperator.IsNull, RgfFilter.QueryOperator.IsNotNull, RgfFilter.QueryOperator.Exists }.Contains(item.QueryOperator)))
+                    {
+                        var prop = FilterComponent.RgfFilterProperties.Single(e => e.Id == item.PropertyId);
+                        <div class="p-1">
+                            @switch (prop.ClientDataType)
+                            {
+                                case ClientDataType.Integer:
+                                    <TelerikNumericTextBox T="int?" @bind-Value="item.IntValue1" />
+                                    break;
+
+                                case ClientDataType.Decimal:
+                                    <TelerikNumericTextBox T="decimal?" @bind-Value="item.DecimalValue1" Arrows="false" />
+                                    break;
+
+                                case ClientDataType.Double:
+                                    <TelerikNumericTextBox T="double?" @bind-Value="item.DoubleValue1" Arrows="false" />
+                                    break;
+
+                                case ClientDataType.DateTime:
+                                    if (prop.FormType == PropertyFormType.Date)
+                                    {
+                                        <TelerikDatePicker T="DateTime?" @bind-Value="item.DateTimeValue1" />
+                                    }
+                                    else
+                                    {
+                                        <TelerikDateTimePicker T="DateTime?" @bind-Value="item.DateTimeValue1" />
+                                    }
+                                    break;
+
+                                case ClientDataType.Boolean:
+                                    <TelerikCheckBox @bind-Value="item.BooleanValue1" />
+                                    break;
+
+                                default:
+                                    if (prop.FormType == PropertyFormType.DropDown || prop.FormType == PropertyFormType.ListBox)
+                                    {
+                                        <TelerikMultiSelect TValue="string" TItem="KeyValuePair<string, string>" ValueField="Key" TextField="Value" Width="11rem"
+                                                            Data="prop.Dictionary" Value="item.StringArray1.ToList()" ValueChanged="(value) => item.StringArray1 = value.ToArray()" />
+                                    }
+                                    else
+                                    {
+                                        <TelerikTextBox @bind-Value="item.StringValue1" />
+                                    }
+                                    break;
+                            }
+                        </div>
+                        @if (new[] { RgfFilter.QueryOperator.Interval, RgfFilter.QueryOperator.IntervalE }.Contains(item.QueryOperator))
+                        {
+                            <div class="p-1">
+                                @switch (prop.ClientDataType)
+                                {
+                                    case ClientDataType.Integer:
+                                        <TelerikNumericTextBox T="int?" @bind-Value="item.IntValue2" />
+                                        break;
+
+                                    case ClientDataType.Decimal:
+                                        <TelerikNumericTextBox T="decimal?" @bind-Value="item.DecimalValue2" Arrows="false" />
+                                        break;
+
+                                    case ClientDataType.Double:
+                                        <TelerikNumericTextBox T="double?" @bind-Value="item.DoubleValue2" Arrows="false" />
+                                        break;
+
+                                    case ClientDataType.DateTime:
+                                        if (prop.FormType == PropertyFormType.Date)
+                                        {
+                                            <TelerikDatePicker T="DateTime?" @bind-Value="item.DateTimeValue2" />
+                                        }
+                                        else
+                                        {
+                                            <TelerikDateTimePicker T="DateTime?" @bind-Value="item.DateTimeValue2" />
+                                        }
+                                        break;
+
+                                    default:
+                                        <TelerikTextBox @bind-Value="item.StringValue2" />
+                                        break;
+                                }
+                            </div>
+                        }
+                        @if (new[] { RgfFilter.QueryOperator.Like, RgfFilter.QueryOperator.NotLike }.Contains(item.QueryOperator))
+                        {
+                            <div class="p-1">
+                                <TelerikCheckBox @bind-Value="item.ToLower" />
+                                <label>ToLower</label>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </li>
+        @if (item.Conditions != null)
+        {
+            <li>
+                <FilterConditionComponent FilterComponent="FilterComponent" Condition="item" />
+            </li>
+            <li>
+                <div class="p-1">
+                    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Warning" OnClick="() => OnRemoveBracket(item)" Title="@RecroDict.GetRgfUiString("Delete")">
+                        <span>)</span><sup>@item.ClientId</sup>
+                    </TelerikButton>
+                </div>
+            </li>
+        }
+    }
+    <li>
+        <div>
+            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" Icon="SvgIcon.Plus" OnClick="() => OnAddCondition(Condition)" />
+        </div>
+    </li>
+</ul>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfFilterComponent FilterComponent { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public RgfFilter.Condition Condition { get; set; } = null!;
+
+    private IRgManager Manager => FilterComponent.EntityParameters.Manager!;
+    private IRecroDictService RecroDict => Manager.RecroDict;
+
+    private Dictionary<int, string> Columns => FilterComponent.RgfFilterProperties.ToDictionary(p => p.Id, p => p.ColTitle);
+    private Dictionary<RgfFilter.LogicalOperator, string> LogicalOperators => RgfFilter.GetLogicalOperators(RecroDict);
+    private Dictionary<RgfFilter.QueryOperator, string> GetQueryOperators(RgfFilter.Condition condition) => RgfFilter.GetQueryOperators(FilterComponent.RgfFilterProperties.SingleOrDefault(e => e.Id == condition.PropertyId)?.Operators, RecroDict);
+
+    private void OnAddCondition(RgfFilter.Condition condition) => FilterComponent.AddCondition(condition);
+    private void OnRemoveCondition(RgfFilter.Condition condition) => FilterComponent.RemoveCondition(condition);
+    private void OnAddBracket(RgfFilter.Condition condition) => FilterComponent.AddBracket(condition);
+    private void OnRemoveBracket(RgfFilter.Condition condition) => FilterComponent.RemoveBracket(condition);
+    private void OnChangeQueryOperator(RgfFilter.QueryOperator value, RgfFilter.Condition condition) => FilterComponent.ChangeQueryOperator(condition, value);
+    private void OnChangeProperty(int value, RgfFilter.Condition condition) => FilterComponent.ChangeProperty(condition, value);
+}
