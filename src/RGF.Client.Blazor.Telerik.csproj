@@ -33,12 +33,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Recrovit.RecroGridFramework.Client.Blazor" Version="8.0.0-preview" Condition="'$(Configuration)'=='Release'" />
     <PackageReference Include="Telerik.UI.for.Blazor.Trial" Version="4.4.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\RGF.Client.Blazor\src\RGF.Client.Blazor.csproj" Condition="'$(Configuration)'=='Debug'" />
+  <ItemGroup Condition="'$(Configuration)'=='Release'" >
+    <PackageReference Include="Recrovit.RecroGridFramework.Client.Blazor" Version="8.0.0-preview" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'" >
+    <ProjectReference Include="..\..\RGF.Client.Blazor\src\RGF.Client.Blazor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
