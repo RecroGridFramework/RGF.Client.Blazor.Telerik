@@ -1,0 +1,71 @@
+﻿<RgfPagerComponent @ref="_rgfPagerRef" EntityParameters="EntityParameters">
+    <PagerTemplate Context="RgfPager">
+        <TelerikToolBar Class="toolbar-size" Adaptive="false">
+            @if (RgfPager.ItemCount != 0)
+            {
+                <ToolBarButton Title="@RecroDict.GetRgfUiString("First")" Icon="SvgIcon.CaretAltToLeft" Enabled="RgfPager.CurrentPage > 1" OnClick="OnShowFirstPage" />
+                <ToolBarButton Title="@RecroDict.GetRgfUiString("Prev")" Icon="SvgIcon.CaretAltLeft" Enabled="RgfPager.CurrentPage > 1" OnClick="OnShowPreviousPage" />
+                <ToolBarTemplateItem>
+                    <TelerikNumericTextBox T="int" Value="RgfPager.CurrentPage" ValueExpression="() => RgfPager.CurrentPage" ValueChanged="RgfPager.PageChanging"
+                                           Arrows="false" Min="1" Max="RgfPager.TotalPages" Width="@CalcWidth(RgfPager.CurrentPage)" />
+                </ToolBarTemplateItem>
+                <ToolBarButton Title="@RecroDict.GetRgfUiString("Next")" Icon="SvgIcon.CaretAltRight" Enabled="RgfPager.CurrentPage != RgfPager.TotalPages" OnClick="OnShowNextPage" />
+                @if (RgfPager.ItemCount > 0)
+                {
+                    <ToolBarButton Title="@RecroDict.GetRgfUiString("Last")" Icon="SvgIcon.CaretAltToRight" Enabled="RgfPager.CurrentPage != RgfPager.TotalPages" OnClick="OnShowLastPage" />
+                    <ToolBarTemplateItem>
+                        <label>@RecroDict.GetRgfUiString("PageCount")</label>
+                        <TelerikNumericTextBox T="int" Value="RgfPager.TotalPages" ValueExpression="() => RgfPager.TotalPages"
+                                               Arrows="false" ReadOnly="true" Width="@CalcWidth(RgfPager.TotalPages)" />
+                    </ToolBarTemplateItem>
+                    <ToolBarTemplateItem>
+                        <label>@RecroDict.GetRgfUiString("ItemCount")</label>
+                        <TelerikNumericTextBox T="int" Value="RgfPager.ItemCount" ValueExpression="() => RgfPager.ItemCount"
+                                               Arrows="false" ReadOnly="true" Width="@CalcWidth(RgfPager.ItemCount)" />
+                    </ToolBarTemplateItem>
+                }
+                if (Manager.EntityDesc.Options.GetBoolValue("RGO_ClientMode") != true)
+                {
+                    <ToolBarTemplateItem>
+                        <label>@RecroDict.GetRgfUiString("ItemsPerPage")</label>
+                        <TelerikComboBox TValue="string" TItem="string" ClearButton="false" Data="@(new string[] { "5", "10", "15", "25" })"
+                                         Value="@PageSize" ValueExpression="() => PageSize" ValueChanged="RgfPager.PageSizeChanging"
+                                         AllowCustom="true" Width="4.5rem" AdaptiveMode="AdaptiveMode.Auto">
+                            <ComboBoxSettings>
+                                <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
+                            </ComboBoxSettings>
+                        </TelerikComboBox>
+                    </ToolBarTemplateItem>
+                }
+            }
+            else
+            {
+                <ToolBarTemplateItem>
+                    <label>@RecroDict.GetRgfUiString("ItemCount")</label>
+                    <TelerikNumericTextBox T="int" Value="RgfPager.ItemCount" ValueExpression="() => RgfPager.ItemCount"
+                                           Arrows="false" ReadOnly="true" Width="@CalcWidth(RgfPager.ItemCount)" />
+                </ToolBarTemplateItem>
+            }
+        </TelerikToolBar>
+    </PagerTemplate>
+</RgfPagerComponent>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfEntityParameters EntityParameters { get; set; } = null!;
+
+    private IRgManager Manager => EntityParameters.Manager!;
+    private RgfPagerParameters PagerParameters { get => EntityParameters.PagerParameters; }
+    private IRecroDictService RecroDict => Manager.RecroDict;
+
+    private RgfPagerComponent _rgfPagerRef { get; set; } = null!;
+
+    private void OnShowFirstPage(MouseEventArgs args) => _rgfPagerRef.PageChanging(1);
+    private void OnShowNextPage(MouseEventArgs args) => _rgfPagerRef.PageChanging(_rgfPagerRef.CurrentPage + 1);
+    private void OnShowPreviousPage(MouseEventArgs args) => _rgfPagerRef.PageChanging(_rgfPagerRef.CurrentPage - 1);
+    private void OnShowLastPage(MouseEventArgs args) => _rgfPagerRef.PageChanging(_rgfPagerRef.TotalPages);
+
+    private string CalcWidth(int page) => page < 100 ? "54px" : page < 1E4 ? "74px" : "114px";
+    private string PageSize => _rgfPagerRef.PageSize.ToString();
+}

@@ -1,0 +1,175 @@
+﻿
+<RgfFormItemComponent FormItemParameters="FormItemParameters">
+    <ItemTemplate Context="RgfFormItem">
+
+        @if (!Property.EmbededGrid && !Property.NoLabel)
+        {
+            <label for="@Id">@(Property.Label)</label>
+        }
+
+        @{
+            var formItemCssClass = $"{RgfFormItem.CssClass} {CurrentEditContext.FieldCssClass(FormItemParameters.FieldId)}";
+            switch (PropertyDesc.FormType)
+            {
+                case PropertyFormType.TextBox:
+                    if (Property.ForeignEntity != null)
+                    {
+                        <div class="k-display-flex">
+                            <TelerikTextBox @bind-Value="ItemData.StringValue"
+                                            ReadOnly="Property.Readonly" Enabled="!Property.Disabled"
+                                            Class="@formItemCssClass" Id="@Id" />
+                            <TelerikButton Class="button.IsPrimary" Icon="SvgIcon.Search" OnClick="() => RgfFormItem.OnSearchEntity(ItemData.StringValue)" />
+                        </div>
+                    }
+                    else
+                    {
+                        @switch (PropertyDesc.ClientDataType)
+                        {
+                            case ClientDataType.Integer:
+                                <TelerikNumericTextBox @bind-Value="ItemData.IntValue"
+                                                       T="int?" Arrows="false"
+                                                       ReadOnly="Property.Readonly" Enabled="!Property.Disabled"
+                                                       Class="@formItemCssClass" Id="@Id" />
+                                break;
+
+                            case ClientDataType.Decimal:
+                                <TelerikNumericTextBox @bind-Value="ItemData.DecimalValue"
+                                                       T="decimal?" Arrows="false"
+                                                       ReadOnly="Property.Readonly" Enabled="!Property.Disabled"
+                                                       Class="@formItemCssClass" Id="@Id" />
+                                break;
+
+                            case ClientDataType.Double:
+                                <TelerikNumericTextBox @bind-Value="ItemData.DoubleValue"
+                                                       T="double?" Arrows="false"
+                                                       ReadOnly="Property.Readonly" Enabled="!Property.Disabled"
+                                                       Class="@formItemCssClass" Id="@Id" />
+                                break;
+
+                            default:
+                                <TelerikTextBox @bind-Value="ItemData.StringValue"
+                                                Password="PropertyDesc.PasswordType"
+                                                ReadOnly="Property.Readonly" Enabled="!Property.Disabled"
+                                                Class="@formItemCssClass" Id="@Id" />
+                                break;
+                        }
+                    }
+                    break;
+
+                case PropertyFormType.TextBoxMultiLine:
+                    <TelerikTextArea @bind-Value="ItemData.StringValue"
+                                     ReadOnly="Property.Readonly" Enabled="!Property.Disabled"
+                                     Class="@formItemCssClass" Id="@Id" />
+                    break;
+
+                case PropertyFormType.CheckBox:
+                case PropertyFormType.DropDown:
+                    if (PropertyDesc.FormType == PropertyFormType.CheckBox && Property.AvailableItems?.Any() != true)
+                    {
+                        <div>
+                            <TelerikCheckBox @bind-Value="ItemData.BooleanValue"
+                                             Enabled="!Property.Readonly && !Property.Disabled"
+                                             Class="@formItemCssClass" />
+                        </div>
+                    }
+                    else
+                    {
+                        <TelerikComboBox TValue="string" TItem="RgfForm.DictionaryItem" ValueField="Key" TextField="Value"
+                                         Data="Property.AvailableItems.Where(e=> !string.IsNullOrEmpty(e.Value))" @bind-Value="ItemData.StringValue"
+                                         ReadOnly="Property.Readonly" Enabled="!Property.Disabled" ClearButton="Property.AvailableItems.Any(e=> string.IsNullOrEmpty(e.Value)) == true"
+                                         Class="@formItemCssClass" Id="@Id">
+                            <ComboBoxSettings>
+                                <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
+                            </ComboBoxSettings>
+                        </TelerikComboBox>
+                    }
+                    break;
+
+                case PropertyFormType.Date:
+                    <TelerikDatePicker @bind-Value="ItemData.DateTimeValue"
+                                       ReadOnly="Property.Readonly" Enabled="!Property.Disabled"
+                                       Class="@formItemCssClass" Id="@Id" />
+                    break;
+
+                case PropertyFormType.DateTime:
+                    <TelerikDateTimePicker @bind-Value="ItemData.DateTimeValue"
+                                           ReadOnly="Property.Readonly" Enabled="!Property.Disabled"
+                                           Class="@formItemCssClass" Id="@Id" />
+                    break;
+
+                case PropertyFormType.StaticText:
+                    <div class="@formItemCssClass" style="@Property.Style">
+                        @(ItemData.StringValue)
+                    </div>
+                    break;
+
+                case PropertyFormType.ImageInDB:
+                    <img src="@($"{ApiService.BaseAddress}{ItemData.StringValue}")" class="@formItemCssClass" style="@Property.Style" />
+                    break;
+
+                case PropertyFormType.RecroDict:
+                    <div class="@formItemCssClass" style="@Property.Style">
+                        @((MarkupString)ItemData.StringValue)
+                    </div>
+                    break;
+
+                case PropertyFormType.HtmlEditor:
+                    <TelerikEditor @bind-Value="ItemData.StringValue" Tools="_telerikEditorTools"
+                                   ReadOnly="Property.Readonly" Enabled="!Property.Disabled"
+                                   Class="@formItemCssClass" Id="@Id" />
+                    break;
+
+                case PropertyFormType.RecroGrid:
+                    <div class="@formItemCssClass" style="@Property.Style">
+                        @if (this.FormComponent.FormEditMode == FormEditMode.Create)
+                        {
+                            <div class="card">
+                                <div class="card-header">
+                                    @Property.Label
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @RgfEntityComponent.Create(new RgfEntityParameters(Property.ForeignEntity.EntityName, FormComponent.Manager.SessionParams) { GridId = ItemData.StringValue})
+                        }
+                    </div>
+                    break;
+
+                case PropertyFormType.Entity:
+                case PropertyFormType.Invalid:
+                case PropertyFormType.ListBox:
+                case PropertyFormType.Custom:
+                default:
+                    break;
+            }
+        }
+
+    </ItemTemplate>
+</RgfFormItemComponent>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfFormItemParameters FormItemParameters { get; set; } = null!;
+
+    [CascadingParameter]
+    public EditContext CurrentEditContext { get; set; } = null!;
+
+    protected RgfFormComponent FormComponent => FormItemParameters.FormComponent;
+    protected RgfForm.Property Property => FormItemParameters.Property;
+    protected RgfDynamicData ItemData => FormItemParameters.ItemData;
+
+    protected RgfProperty PropertyDesc => Property.PropertyDesc;
+
+    protected string Id { get; set; } = DynamicComponentWrapper.GetNextId();
+    protected virtual List<IEditorTool> _telerikEditorTools
+    {
+        get
+        {
+            List<IEditorTool> tools = Telerik.Blazor.Components.Editor.EditorToolSets.Default.ToList();
+            tools.Add(new Telerik.Blazor.Components.Editor.ViewHtml());
+            return tools;
+        }
+    }
+}

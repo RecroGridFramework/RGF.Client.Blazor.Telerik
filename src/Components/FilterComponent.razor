@@ -1,0 +1,86 @@
+﻿
+<RgfFilterComponent @ref="_rgfFilterRef" EntityParameters="EntityParameters">
+    <FilterTemplate Context="RgfFilterComp">
+        <FilterConditionComponent FilterComponent="RgfFilterComp" Condition="RgfFilterComp.Condition" />
+    </FilterTemplate>
+    <FooterTemplate Context="RgfFilterComp">
+        <div class="flex-container">
+            <div>
+                <label>Query timeout</label>
+                <TelerikNumericTextBox T="int?" @bind-Value="RgfFilterComp.PredefinedFilter.QueryTimeout" Arrows="false" Width="3rem" Min="0" />
+
+                <TelerikComboBox TValue="string" TItem="string" Value="RgfFilterComp.PredefinedFilterName"
+                                 Data="RgfFilterComp.FilterHandler.PredefinedFilters.Select(e=> e.Name)" AllowCustom="true"
+                                 ValueChanged="OnValueChanged" Width="13rem" AdaptiveMode="AdaptiveMode.Auto">
+                    <ComboBoxSettings>
+                        <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
+                    </ComboBoxSettings>
+                </TelerikComboBox>
+
+                <label>@RecroDict.GetRgfUiString("Public")</label>
+                <TelerikCheckBox @bind-Value=RgfFilterComp.PredefinedFilter.IsGlobal Enabled="Manager.RecroSec.IsAdmin" />
+
+                <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Icon="SvgIcon.Save" Title="@RecroDict.GetRgfUiString("Save")"
+                               Enabled="!string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Name) && (Manager.RecroSec.IsAdmin || !RgfFilterComp.PredefinedFilter.IsGlobal)"
+                               OnClick="() => RgfFilterComp.OnSavePredefinedFilter()" />
+
+                <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Icon="SvgIcon.Trash" Title="@RecroDict.GetRgfUiString("Delete")"
+                               Enabled="!string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Key) && (Manager.RecroSec.IsAdmin || !RgfFilterComp.PredefinedFilter.IsGlobal)"
+                               OnClick="() => RgfFilterComp.OnDeletePredefinedFilter()" />
+            </div>
+            <div class="justify-content-between">
+                <div>
+                    <TelerikSwitch @bind-Value="RgfFilterComp.IsFilterActive" OnLabel="@RecroDict.GetRgfUiString("On")" OffLabel="@RecroDict.GetRgfUiString("Off")" />
+                </div>
+                <div>
+                    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Base" OnClick="RgfFilterComp.OnCancel">@RecroDict.GetRgfUiString("Cancel")</TelerikButton>
+                    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" OnClick="RgfFilterComp.OnOk">OK</TelerikButton>
+                </div>
+            </div>
+        </div>
+    </FooterTemplate>
+</RgfFilterComponent>
+
+<style>
+
+    li {
+        list-style: none outside none;
+        margin-top: 7px;
+    }
+
+    .p-1 {
+        padding: .25rem;
+    }
+
+    .flex-container {
+        display: flex !important;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .justify-content-between {
+        display: flex !important;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+
+</style>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfEntityParameters EntityParameters { get; set; } = null!;
+
+    private IRgManager Manager => EntityParameters.Manager!;
+    private RgfFilterParameters FilterParameters { get => EntityParameters.FilterParameters; }
+    private IRecroDictService RecroDict => Manager.RecroDict;
+
+    private RgfFilterComponent _rgfFilterRef { get; set; } = null!;
+
+    private void OnValueChanged(string value)
+    {
+        _rgfFilterRef.PredefinedFilterName = value;
+        var filter = _rgfFilterRef.FilterHandler.PredefinedFilters.FirstOrDefault(e => e.Name == value);
+        _rgfFilterRef.OnSetPredefinedFilter(filter?.Key ?? value);
+    }
+}

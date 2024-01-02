@@ -1,0 +1,10 @@
+﻿<Telerik.Blazor.Components.TelerikRootComponent>
+    @ChildContent
+</Telerik.Blazor.Components.TelerikRootComponent>
+
+@code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+}

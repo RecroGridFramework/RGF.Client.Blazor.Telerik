@@ -1,0 +1,132 @@
+﻿<TelerikWindow @ref="_window"
+               Visible="@_visible"
+               Modal="@DialogParameters.IsModal"
+               Draggable="true"
+               Resizable="DialogParameters.Resizable ?? false"
+               Class="@DialogParameters.CssClass"
+               ThemeColor="@ThemeColor"
+               FooterLayoutAlign="@WindowFooterLayoutAlign.End"
+               Width="@(DialogParameters.Width != null ? $"{DialogParameters.Width}px" : "auto")"
+               Height="@(DialogParameters.Height != null ? $"{DialogParameters.Height}px" : null)"
+               Top="@_top"
+               Left="@_left"
+               MaxHeight="80%"
+               VisibleChanged="OnVisibleChanged" StateChanged="OnStateChanged">
+    <WindowActions>
+        <WindowAction Name="Close" OnClick="OnClose" />
+    </WindowActions>
+    <WindowTitle>
+        @DialogParameters.Header
+    </WindowTitle>
+    <WindowContent>
+        @DialogParameters.Content
+        @DialogParameters.DynamicChild
+    </WindowContent>
+    <WindowFooter>
+        @if (DialogParameters.FooterTemplate != null)
+        {
+            @DialogParameters.FooterTemplate
+        }
+        @if (DialogParameters.PredefinedButtons != null)
+        {
+            foreach (var button in DialogParameters.PredefinedButtons)
+            {
+                <TelerikButton ThemeColor="@(button.IsPrimary ? ThemeConstants.Button.ThemeColor.Primary : ThemeConstants.Button.ThemeColor.Base)" OnClick="button.Callback">
+                    @if (!string.IsNullOrEmpty(button.ChildText))
+                    {
+                        @button.ChildText
+                    }
+                    else if (button.ChildContent != null)
+                    {
+                        @button.ChildContent
+                    }
+                </TelerikButton>
+            }
+        }
+    </WindowFooter>
+</TelerikWindow>
+
+@inject IJSRuntime _jsRuntime
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfDialogParameters DialogParameters { get; set; } = null!;
+
+    private TelerikWindow _window { get; set; } = default!;
+    private bool _visible { get; set; } = true;
+    private bool _closed { get; set; }
+    private bool _isDestroyed = false;
+    private string? _top { get; set; }
+    private string? _left { get; set; }
+
+    private string ThemeColor
+    {
+        get
+        {
+            switch (DialogParameters.DialogType)
+            {
+                case DialogType.Error:
+                    return ThemeConstants.Button.ThemeColor.Primary;
+
+                case DialogType.Warning:
+                    return ThemeConstants.Button.ThemeColor.Dark;
+
+                case DialogType.Info:
+                default:
+                    return ThemeConstants.Button.ThemeColor.Light;
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (!string.IsNullOrEmpty(DialogParameters.UniqueName))
+        {
+            var pos = await _jsRuntime.InvokeAsync<object[]>(RGFClientBlazorTelerikConfiguration.JsBlazorTelerikUiNamespace + ".Dialog.loadDialogPos", DialogParameters.UniqueName);
+            if (pos is object[] p)
+            {
+                DialogParameters.Width = p[0].ToString();
+                DialogParameters.Height = p[1].ToString();
+                _top = p[2].ToString() + "px";
+                _left = p[3].ToString() + "px";
+            }
+        }
+        DialogParameters.Destroy = Destroy;
+    }
+
+    private void Destroy()
+    {
+        if (!_isDestroyed)
+        {
+            if (!string.IsNullOrEmpty(DialogParameters.UniqueName))
+            {
+                _ = _jsRuntime.InvokeVoidAsync(RGFClientBlazorTelerikConfiguration.JsBlazorTelerikUiNamespace + ".Dialog.saveDialogPos", DialogParameters.UniqueName, _window.Width, _window.Height, _window.Top, _window.Left);
+            }
+            _isDestroyed = true;
+        }
+    }
+
+    private void OnClose()
+    {
+        if (!_closed && DialogParameters.OnClose != null)
+        {
+            var cancel = DialogParameters.OnClose.Invoke() == false;
+            if (cancel)
+            {
+                _visible = true;
+                return;
+            }
+        }
+        _closed = true;
+    }
+
+    private void OnStateChanged(WindowState state) => _window.State = WindowState.Default;
+    private void OnVisibleChanged(bool visible)
+    {
+        if (!visible)
+        {
+            OnClose();
+        }
+    }
+}

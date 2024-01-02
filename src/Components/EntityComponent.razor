@@ -1,0 +1,34 @@
+﻿<RgfEntityComponent EntityParameters="EntityParameters"
+                    ToolbarTemplate="ToolbarTemplate"
+                    GridTemplate="GridTemplate"
+                    FilterTemplate="FilterTemplate"
+                    PagerTemplate="PagerTemplate"
+                    FormTemplate="FormTemplate">
+    <LoadingIndicator>
+        <div class="loader-container">
+            <span class="loader-size-title">Loading...</span>
+            <TelerikLoader Class="loader-indicator" Type="@LoaderType.ConvergingSpinner" Size="@(ThemeConstants.Loader.Size.Large)"></TelerikLoader>
+        </div>
+    </LoadingIndicator>
+</RgfEntityComponent>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public RgfEntityParameters EntityParameters { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment<RgfEntityParameters> ToolbarTemplate { get; set; } = (context) => @<ToolbarComponent EntityParameters="context" />;
+
+    [Parameter]
+    public RenderFragment<RgfEntityParameters> GridTemplate { get; set; } = (context) => @<GridComponent EntityParameters="context" />;
+
+    [Parameter]
+    public RenderFragment<RgfEntityParameters> FilterTemplate { get; set; } = (context) => @<FilterComponent EntityParameters="context" />;
+
+    [Parameter]
+    public RenderFragment<RgfEntityParameters> PagerTemplate { get; set; } = (context) => @<PagerComponent EntityParameters="context" />;
+
+    [Parameter]
+    public RenderFragment<RgfEntityParameters> FormTemplate { get; set; } = (context) => @<FormComponent EntityParameters="context" />;
+}

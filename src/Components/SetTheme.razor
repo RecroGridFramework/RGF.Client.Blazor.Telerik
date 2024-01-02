@@ -1,0 +1,45 @@
+﻿<TelerikComboBox ValueField="Key" TextField="Value" @bind-Value="@ThemeName" Data="Themes" OnChange="OnThemeChange"
+                 ClearButton="false" Width="auto" AdaptiveMode="AdaptiveMode.Auto" >
+    <ComboBoxSettings>
+        <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
+    </ComboBoxSettings>
+</TelerikComboBox>
+
+@inject IJSRuntime _jsRuntime
+@code {
+
+    [Parameter]
+    public string ThemeName { get; set; } = "kendo-theme-default/all";
+
+    private IJSObjectReference? _module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var libName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+            _module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"{RgfClientConfiguration.AppRootUrl}_content/{libName}/scripts/telerik-theme.js");
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnThemeChange(object arg)
+    {
+        string link = (string)arg;
+        if (!link.StartsWith("https"))
+        {
+            link = $"{RgfClientConfiguration.AppRootUrl}_content/Telerik.UI.for.Blazor.Trial/css/{link}.css";
+        }
+        _module?.InvokeVoidAsync("setTheme", link);
+    }
+
+    private List<KeyValuePair<string, string>> Themes = new() {
+         new("kendo-theme-default/all", "Default: Main"),
+         new("kendo-theme-default/default-ocean-blue", "Default: Ocean Blue"),
+         new("https://blazor.cdn.telerik.com/blazor/4.4.0/kendo-theme-default/swatches/default-main-dark.css", "Default: Main Dark"),
+
+         new("kendo-theme-bootstrap/all", "Bootstrap: Main"),
+         new("kendo-theme-material/all", "Material: Main"),
+         new("kendo-theme-fluent/all", "Fluent: Main"),
+    };
+}
