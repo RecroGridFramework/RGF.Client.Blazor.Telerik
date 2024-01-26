@@ -1,5 +1,5 @@
 ﻿
-<RgfFormComponent @ref="_rgfFormRef" EntityParameters="EntityParameters"
+<RgfFormComponent @ref="_rgfFormRef" EntityParameters="EntityParameters" FormComponent="this"
                   FormGroupLayoutTemplate="FormGroupLayoutTemplate"
                   FormItemLayoutTemplate="FormItemLayoutTemplate">
     <FormTemplate Context="RgfForm">
@@ -30,7 +30,6 @@
     <FormValidationTemplate>
         <TelerikValidationSummary />
     </FormValidationTemplate>
-
 </RgfFormComponent>
 
 @inject IJSRuntime _jsRuntime
