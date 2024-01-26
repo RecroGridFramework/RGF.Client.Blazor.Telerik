@@ -4,7 +4,7 @@
                   FormItemLayoutTemplate="FormItemLayoutTemplate">
     <FormTemplate Context="RgfForm">
         <EditForm EditContext="RgfForm.CurrentEditContext">
-            <TelerikTabStrip PersistTabContent="true">
+            <TelerikTabStrip PersistTabContent="true" ActiveTabIndex="ActiveTabIndex" ActiveTabIndexChanged="ActivateTab">
                 @foreach (var tab in RgfForm.FormData.FormTabs)
                 {
                     <TabStripTab Title="@tab.Title">
@@ -35,14 +35,16 @@
 @inject IJSRuntime _jsRuntime
 @code {
 
-        [Parameter, EditorRequired]
-        public RgfEntityParameters EntityParameters { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public RgfEntityParameters EntityParameters { get; set; } = null!;
 
     private IRgManager Manager => EntityParameters.Manager!;
     private RgfFormParameters FormParameters { get => EntityParameters.FormParameters; }
     protected IRecroDictService RecroDict => Manager.RecroDict;
 
     private RgfFormComponent _rgfFormRef { get; set; } = null!;
+    public int ActiveTabIndex { get; private set; } = 0;
+    public HashSet<int> PreviouslyActiveTabs { get; private set; } = new() { 0 };
 
     protected override void OnInitialized()
     {
@@ -88,4 +90,10 @@
 
     public RenderFragment<RgfFormItemParameters> FormItemLayoutTemplate => (param) =>
         param.BaseFormComponent.DefaultFormItemLayoutTemplate(param);
+
+    private void ActivateTab(int index)
+    {
+        ActiveTabIndex = index;
+        PreviouslyActiveTabs.Add(index);
+    }
 }
