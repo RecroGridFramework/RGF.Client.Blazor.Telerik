@@ -2,6 +2,12 @@
 <RgfToolbarComponent @ref="_rgfToolbarRef" EntityParameters="EntityParameters">
     <ToolbarTemplate Context="RgfToolbar">
         <TelerikToolBar Class="toolbar-size" Adaptive="false">
+            @if (RgfToolbar.CustomMenu != null)
+            {
+                <ToolBarTemplateItem>
+                    @RgfToolbar.CreateCustomMenu(SvgIcon.ListUnorderedSquare)
+                </ToolBarTemplateItem>
+            }
             @if (Manager.EntityDesc.Options.GetBoolValue("RGO_ClientMode") != true)
             {
                 <ToolBarButtonGroup>
