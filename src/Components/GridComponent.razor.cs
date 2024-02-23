@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using Recrovit.RecroGridFramework.Abstraction.Contracts.Services;
-using Recrovit.RecroGridFramework.Abstraction.Infrastructure.Events;
 using Recrovit.RecroGridFramework.Abstraction.Models;
 using Recrovit.RecroGridFramework.Client.Blazor.Components;
 using Recrovit.RecroGridFramework.Client.Blazor.Events;
@@ -146,22 +145,20 @@ public partial class GridComponent : ComponentBase, IDisposable
         var rowData = arg.Args.RowData ?? throw new ArgumentException();
         foreach (var prop in EntityDesc.SortedVisibleColumns)
         {
-            var attr = rowData["__attributes"] as RgfDynamicDictionary;
-            if (attr != null)
+            string? propClass = null;
+            if (prop.FormType == PropertyFormType.CheckBox)
             {
-                string? propAttr = null;
-                if (prop.FormType == PropertyFormType.CheckBox)
-                {
-                    propAttr = " rg-center";
-                }
-                else if (prop.ListType == PropertyListType.Numeric)
-                {
-                    propAttr = " rg-numeric";
-                }
-                if (propAttr != null)
-                {
-                    attr[$"class-{prop.Alias}"] += propAttr;
-                }
+                propClass = "rg-center";
+            }
+            else if (prop.ListType == PropertyListType.Numeric)
+            {
+                propClass = "rg-numeric";
+            }
+            if (propClass != null)
+            {
+                var attributes = rowData.GetOrNew<RgfDynamicDictionary>("__attributes");
+                var propAttributes = attributes.GetOrNew<RgfDynamicDictionary>(prop.Alias);
+                propAttributes.Set<string>("class", (old) => string.IsNullOrEmpty(old) ? propClass : $"{old.Trim()} {propClass}");
             }
         }
         return Task.CompletedTask;
@@ -170,37 +167,47 @@ public partial class GridComponent : ComponentBase, IDisposable
     private void OnRowRender(GridRowRenderEventArgs args)
     {
         var rowData = (RgfDynamicDictionary)args.Item;
-        var attributes = (RgfDynamicDictionary)rowData["__attributes"];
-        var attr = attributes.GetItemData("class").StringValue;
-        if (attr != null)
+        var attributes = rowData.Get<RgfDynamicDictionary>("__attributes");
+        if (attributes != null)
         {
-            args.Class = attr;
+            var val = attributes.Get<string>("class");
+            if (val != null)
+            {
+                args.Class = val;
+            }
+            val = attributes.Get<string>("style");
+            if (val != null)
+            {
+                //Not supported
+                //args.? = val
+            }
         }
-        //Not supported
-        //attr = attributes.GetItemData("style").StringValue;
-        //if (attr != null)
-        //{
-        //    args.?.Attributes.Add("style", attr);
-        //}
     }
 
     private void OnCellRender(RgfProperty prop, GridCellRenderEventArgs args)
     {
         var rowData = (RgfDynamicDictionary)args.Item;
-        if (prop.ColPos > 0)
+        var attributes = rowData.Get<RgfDynamicDictionary>("__attributes");
+        if (attributes != null)
         {
-            var attributes = (RgfDynamicDictionary)rowData["__attributes"];
-            var attr = attributes.GetItemData($"class-{prop.Alias}").StringValue;
-            if (attr != null)
+            if (prop.ColPos > 0)
             {
-                args.Class = attr;
+                var propAttributes = attributes.Get<RgfDynamicDictionary>(prop.Alias);
+                if (propAttributes != null)
+                {
+                    var val = propAttributes.Get<string>("class");
+                    if (val != null)
+                    {
+                        args.Class = val;
+                    }
+                    val = propAttributes.Get<string>("style");
+                    if (val != null)
+                    {
+                        //Not supported
+                        //args.? = val;
+                    }
+                }
             }
-            //Not supported
-            //attr = attributes.GetItemData($"style-{prop.Alias}").StringValue;
-            //if (attr != null)
-            //{
-            //    args.?.Attributes.Add("style", attr);
-            //}
         }
     }
 
