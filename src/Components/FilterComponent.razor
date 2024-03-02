@@ -28,7 +28,7 @@
                                Enabled="!string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Key) && (Manager.RecroSec.IsAdmin || !RgfFilterComp.PredefinedFilter.IsGlobal)"
                                OnClick="() => RgfFilterComp.OnDeletePredefinedFilter()" />
             </div>
-            <div class="justify-content-between">
+            <div class="k-flex-layout k-justify-content-between k-mt-lg">
                 <div>
                     <TelerikSwitch @bind-Value="RgfFilterComp.IsFilterActive" OnLabel="@RecroDict.GetRgfUiString("On")" OffLabel="@RecroDict.GetRgfUiString("Off")" />
                 </div>
@@ -40,31 +40,6 @@
         </div>
     </FooterTemplate>
 </RgfFilterComponent>
-
-<style>
-
-    li {
-        list-style: none outside none;
-        margin-top: 7px;
-    }
-
-    .p-1 {
-        padding: .25rem;
-    }
-
-    .flex-container {
-        display: flex !important;
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .justify-content-between {
-        display: flex !important;
-        justify-content: space-between;
-        margin-top: 1rem;
-    }
-
-</style>
 
 @code {
 

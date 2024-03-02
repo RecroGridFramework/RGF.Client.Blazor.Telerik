@@ -57,6 +57,25 @@
         FormParameters.ModifiedCssClass = FormParameters.ModifiedCssClass ?? "k-valid";
     }
 
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        var rowIndex = FormParameters.FormViewKey.RowIndex;
+        if (rowIndex != -1)
+        {
+            var buttons = new List<ButtonParameters>() {
+                new(nameof(SvgIcon.CaretAltToLeft), RecroDict.GetRgfUiString("First"), async (arg) => await _rgfFormRef.FirstFormItemAsync()) { Disabled = rowIndex <= 0 },
+                new(nameof(SvgIcon.CaretAltLeft), RecroDict.GetRgfUiString("Prev"), async (arg) => await _rgfFormRef.PrevFormItemAsync()) { Disabled = rowIndex <= 0 },
+                new(nameof(SvgIcon.CaretAltRight), RecroDict.GetRgfUiString("Next"), async (arg) => await _rgfFormRef.NextFormItemAsync()) { Disabled = rowIndex + 1 >= Manager.ItemCount.Value },
+                new(nameof(SvgIcon.CaretAltToRight), RecroDict.GetRgfUiString("Last"), async (arg) => await _rgfFormRef.LastFormItemAsync()) { Disabled = rowIndex + 1 >= Manager.ItemCount.Value } };
+            FormParameters.DialogParameters.LeftButtons = buttons;
+        }
+        else
+        {
+            FormParameters.DialogParameters.LeftButtons = null;
+        }
+    }
+
     // public RenderFragment<RgfFormGroupLayoutParameters> FormGroupLayoutTemplate => (param) =>
     // @<TelerikGridLayout RowSpacing="1rem" ColumnSpacing="1rem">
     //     <GridLayoutColumns>
