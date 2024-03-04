@@ -18,7 +18,7 @@
                             <TelerikTextBox @bind-Value="ItemData.StringValue"
                                             ReadOnly="Property.Readonly" Enabled="!Property.Disabled"
                                             Class="@formItemCssClass" Id="@Id" />
-                            <TelerikButton Class="button.IsPrimary" Icon="SvgIcon.Search" OnClick="() => RgfFormItem.OnSearchEntity(ItemData.StringValue)" />
+                            <TelerikButton Class="button.IsPrimary" Icon="SvgIcon.Search" OnClick="async () => await RgfFormItem.FindEntityAsync(ItemData.StringValue)" />
                         </div>
                     }
                     else
