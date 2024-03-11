@@ -18,14 +18,14 @@
                 </TelerikComboBox>
 
                 <label>@RecroDict.GetRgfUiString("Public")</label>
-                <TelerikCheckBox @bind-Value=RgfFilterComp.PredefinedFilter.IsGlobal Enabled="Manager.RecroSec.IsAdmin" />
+                <TelerikCheckBox @bind-Value=RgfFilterComp.PredefinedFilter.IsGlobal Enabled="RgfFilterComp.IsPredefinedFilterAdmin" />
 
                 <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Icon="SvgIcon.Save" Title="@RecroDict.GetRgfUiString("Save")"
-                               Enabled="!string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Name) && (Manager.RecroSec.IsAdmin || !RgfFilterComp.PredefinedFilter.IsGlobal)"
+                               Enabled="!string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Name) && (RgfFilterComp.IsPredefinedFilterAdmin || !RgfFilterComp.PredefinedFilter.IsGlobal)"
                                OnClick="() => RgfFilterComp.OnSavePredefinedFilter()" />
 
                 <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Icon="SvgIcon.Trash" Title="@RecroDict.GetRgfUiString("Delete")"
-                               Enabled="!string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Key) && (Manager.RecroSec.IsAdmin || !RgfFilterComp.PredefinedFilter.IsGlobal)"
+                               Enabled="!string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Key) && (RgfFilterComp.IsPredefinedFilterAdmin || !RgfFilterComp.PredefinedFilter.IsGlobal)"
                                OnClick="() => RgfFilterComp.OnDeletePredefinedFilter()" />
             </div>
             <div class="k-flex-layout k-justify-content-between k-mt-lg">
