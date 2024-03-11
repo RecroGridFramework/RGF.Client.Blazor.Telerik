@@ -1,5 +1,4 @@
-﻿
-<ul class="list-unstyled">
+﻿<ul class="list-unstyled">
     @for (int idx = 0; idx < Condition.Conditions?.Count; idx++)
     {
         var item = Condition.Conditions[idx];
@@ -156,6 +155,7 @@
     </li>
 </ul>
 
+@inject IRecroDictService RecroDict
 @code {
 
     [Parameter, EditorRequired]
@@ -165,7 +165,6 @@
     public RgfFilter.Condition Condition { get; set; } = null!;
 
     private IRgManager Manager => FilterComponent.EntityParameters.Manager!;
-    private IRecroDictService RecroDict => Manager.RecroDict;
 
     private Dictionary<int, string> Columns => FilterComponent.RgfFilterProperties.ToDictionary(p => p.Id, p => p.ColTitle);
     private Dictionary<RgfFilter.LogicalOperator, string> LogicalOperators => RgfFilter.GetLogicalOperators(RecroDict);

@@ -1,5 +1,4 @@
-﻿
-<RgfFormComponent @ref="_rgfFormRef" EntityParameters="EntityParameters" FormComponent="this"
+﻿<RgfFormComponent @ref="_rgfFormRef" EntityParameters="EntityParameters" FormComponent="this"
                   FormGroupLayoutTemplate="FormGroupLayoutTemplate"
                   FormItemLayoutTemplate="FormItemLayoutTemplate">
     <FormTemplate Context="RgfForm">
@@ -33,6 +32,7 @@
 </RgfFormComponent>
 
 @inject IJSRuntime _jsRuntime
+@inject IRecroDictService RecroDict
 @code {
 
     [Parameter, EditorRequired]
@@ -40,7 +40,6 @@
 
     private IRgManager Manager => EntityParameters.Manager!;
     private RgfFormParameters FormParameters { get => EntityParameters.FormParameters; }
-    protected IRecroDictService RecroDict => Manager.RecroDict;
 
     private RgfFormComponent _rgfFormRef { get; set; } = null!;
     public int ActiveTabIndex { get; private set; } = 0;
