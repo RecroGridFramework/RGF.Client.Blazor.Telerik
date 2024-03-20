@@ -27,6 +27,7 @@ public static class RGFClientBlazorTelerikConfiguration
         await jsRuntime.InvokeVoidAsync("import", $"{RgfClientConfiguration.AppRootPath}_content/Telerik.UI.for.Blazor{trialEx}/js/telerik-blazor.js");
         await jsRuntime.InvokeVoidAsync("eval", "document.getElementsByTagName('body')[0].classList.add('k-body');");
         await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.AddStyleSheetLink", $"{RgfClientConfiguration.AppRootPath}_content/Telerik.UI.for.Blazor{trialEx}/css/{themeName}.css", false, TelerikThemeId);
+        await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.AddStyleSheetLink", $"{RgfClientConfiguration.AppRootPath}_content/{libName}/css/telerikui-styles.css", false, BlazorTelerikUiCss);
 
         await jsRuntime.InvokeVoidAsync("import", $"{RgfClientConfiguration.AppRootPath}_content/{libName}/scripts/recrovit-rgf-blazor-telerik.js");
     }
@@ -35,8 +36,10 @@ public static class RGFClientBlazorTelerikConfiguration
     {
         await jsRuntime.InvokeVoidAsync("eval", $"document.getElementById('{TelerikThemeId}')?.remove();");
         await jsRuntime.InvokeVoidAsync("eval", "document.getElementsByTagName('body')[0].classList.remove('k-body');");
+        await jsRuntime.InvokeVoidAsync("eval", $"document.getElementById('{BlazorTelerikUiCss}')?.remove();");
     }
 
     public static readonly string TelerikThemeId = "telerik-theme";
     public static readonly string JsBlazorTelerikUiNamespace = "Recrovit.RGF.Blazor.TelerikUI";
+    private static readonly string BlazorTelerikUiCss = "rgf-client-blazor-telerikui";
 }

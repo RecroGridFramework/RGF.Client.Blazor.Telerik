@@ -27,22 +27,22 @@
         {
             @DialogParameters.FooterTemplate
         }
-        @if (DialogParameters.PredefinedButtons != null)
-        {
-            foreach (var button in DialogParameters.PredefinedButtons)
-            {
-                <TelerikButton ThemeColor="@(button.IsPrimary ? ThemeConstants.Button.ThemeColor.Primary : ThemeConstants.Button.ThemeColor.Base)" OnClick="button.Callback">
-                    @if (!string.IsNullOrEmpty(button.ChildText))
+        <div class="flex-container">
+            <div class="k-flex-layout k-flex-wrap k-justify-content-between k-align-items-center">
+                <div class="k-flex-layout k-justify-content-flex-start">
+                    @foreach (var button in DialogParameters.LeftButtons ?? [])
                     {
-                        @button.ChildText
+                        @CreateButton(button)
                     }
-                    else if (button.ChildContent != null)
+                </div>
+                <div class="k-flex-layout k-justify-content-flex-end">
+                    @foreach (var button in DialogParameters.PredefinedButtons ?? [])
                     {
-                        @button.ChildContent
+                        @CreateButton(button)
                     }
-                </TelerikButton>
-            }
-        }
+                </div>
+            </div>
+        </div>
     </WindowFooter>
 </TelerikWindow>
 
@@ -76,6 +76,34 @@
                     return ThemeConstants.Button.ThemeColor.Light;
             }
         }
+    }
+
+    private RenderFragment<ButtonParameters> CreateButton => (button) =>
+    @<div class="k-p-1">
+        <TelerikButton Title="@button.Title" ThemeColor="@(button.IsPrimary ? ThemeConstants.Button.ThemeColor.Primary : ThemeConstants.Button.ThemeColor.Base)" Class="@button.CssClass"
+                       Icon="@CreateIcon(button.IconName)" Enabled="@(!button.Disabled)" OnClick="button.Callback">
+            @if (!string.IsNullOrEmpty(button.ChildText))
+        {
+            @button.ChildText
+        }
+        else if (button.ChildContent != null)
+        {
+            @button.ChildContent
+        }
+        </TelerikButton>
+    </div>;
+
+    private ISvgIcon? CreateIcon(string? iconName)
+    {
+        if (!string.IsNullOrEmpty(iconName))
+        {
+            var property = typeof(SvgIcon).GetProperty(iconName);
+            if (property != null)
+            {
+                return (ISvgIcon?)property.GetValue(null);
+            }
+        }
+        return null;
     }
 
     protected override async Task OnInitializedAsync()

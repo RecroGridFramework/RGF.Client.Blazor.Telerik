@@ -1,26 +1,25 @@
-﻿
-<ul class="list-unstyled">
+﻿<ul class="list-unstyled">
     @for (int idx = 0; idx < Condition.Conditions?.Count; idx++)
     {
         var item = Condition.Conditions[idx];
         <li>
             <div class="k-display-flex">
-                <div class="p-1">
+                <div class="k-p-1">
                     <TelerikComboBox ValueField="Key" TextField="Value" @bind-Value="item.LogicalOperator" Enabled="idx != 0" Data="LogicalOperators" ClearButton="false" Width="78px">
                         <ComboBoxSettings>
                             <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
                         </ComboBoxSettings>
                     </TelerikComboBox>
                 </div>
-                <div class="p-1">
+                <div class="k-p-1">
                     <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Icon="SvgIcon.Trash" OnClick="() => OnRemoveCondition(item)" />
                 </div>
-                <div class="p-1">
+                <div class="k-p-1">
                     <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Icon="SvgIcon.Css" OnClick="() => OnAddBracket(item)" />
                 </div>
                 @if (item.Conditions != null)
                 {
-                    <div class="p-1">
+                    <div class="k-p-1">
                         <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Warning" OnClick="() => OnRemoveBracket(item)" Title="@RecroDict.GetRgfUiString("Delete")">
                             <sup>@item.ClientId</sup><span>(</span>
                         </TelerikButton>
@@ -28,7 +27,7 @@
                 }
                 else
                 {
-                    <div class="p-1">
+                    <div class="k-p-1">
                         <TelerikComboBox TValue="int" TItem="KeyValuePair<int, string>" ValueField="Key" TextField="Value"
                                          Value="item.PropertyId" Data="Columns" ValueChanged="(value) => OnChangeProperty(value, item)" ClearButton="false">
                             <ComboBoxSettings>
@@ -36,7 +35,7 @@
                             </ComboBoxSettings>
                         </TelerikComboBox>
                     </div>
-                    <div class="p-1">
+                    <div class="k-p-1">
                         <TelerikComboBox TValue="RgfFilter.QueryOperator" TItem="KeyValuePair<RgfFilter.QueryOperator, string>" ValueField="Key" TextField="Value"
                                          Value="item.QueryOperator" Data="GetQueryOperators(item)" ValueChanged="(value) => OnChangeQueryOperator(value, item)" ClearButton="false">
                             <ComboBoxSettings>
@@ -47,7 +46,7 @@
                     @if (!(new[] { RgfFilter.QueryOperator.IsNull, RgfFilter.QueryOperator.IsNotNull, RgfFilter.QueryOperator.Exists }.Contains(item.QueryOperator)))
                     {
                         var prop = FilterComponent.RgfFilterProperties.Single(e => e.Id == item.PropertyId);
-                        <div class="p-1">
+                        <div class="k-p-1">
                             @switch (prop.ClientDataType)
                             {
                                 case ClientDataType.Integer:
@@ -92,7 +91,7 @@
                         </div>
                         @if (new[] { RgfFilter.QueryOperator.Interval, RgfFilter.QueryOperator.IntervalE }.Contains(item.QueryOperator))
                         {
-                            <div class="p-1">
+                            <div class="k-p-1">
                                 @switch (prop.ClientDataType)
                                 {
                                     case ClientDataType.Integer:
@@ -126,7 +125,7 @@
                         }
                         @if (new[] { RgfFilter.QueryOperator.Like, RgfFilter.QueryOperator.NotLike }.Contains(item.QueryOperator))
                         {
-                            <div class="p-1">
+                            <div class="k-p-1">
                                 <TelerikCheckBox @bind-Value="item.ToLower" />
                                 <label>ToLower</label>
                             </div>
@@ -141,7 +140,7 @@
                 <FilterConditionComponent FilterComponent="FilterComponent" Condition="item" />
             </li>
             <li>
-                <div class="p-1">
+                <div class="k-p-1">
                     <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Warning" OnClick="() => OnRemoveBracket(item)" Title="@RecroDict.GetRgfUiString("Delete")">
                         <span>)</span><sup>@item.ClientId</sup>
                     </TelerikButton>
@@ -156,6 +155,7 @@
     </li>
 </ul>
 
+@inject IRecroDictService RecroDict
 @code {
 
     [Parameter, EditorRequired]
@@ -165,7 +165,6 @@
     public RgfFilter.Condition Condition { get; set; } = null!;
 
     private IRgManager Manager => FilterComponent.EntityParameters.Manager!;
-    private IRecroDictService RecroDict => Manager.RecroDict;
 
     private Dictionary<int, string> Columns => FilterComponent.RgfFilterProperties.ToDictionary(p => p.Id, p => p.ColTitle);
     private Dictionary<RgfFilter.LogicalOperator, string> LogicalOperators => RgfFilter.GetLogicalOperators(RecroDict);
