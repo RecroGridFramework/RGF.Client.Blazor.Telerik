@@ -3,7 +3,8 @@
                     GridTemplate="GridTemplate"
                     FilterTemplate="FilterTemplate"
                     PagerTemplate="PagerTemplate"
-                    FormTemplate="FormTemplate">
+                    FormTemplate="FormTemplate"
+                    ChartTemplate="ChartTemplate!">
     <LoadingIndicator>
         <div class="loader-container">
             <span class="loader-size-title">Loading...</span>
@@ -31,4 +32,7 @@
 
     [Parameter]
     public RenderFragment<RgfEntityParameters> FormTemplate { get; set; } = (context) => @<FormComponent EntityParameters="context" />;
+
+    [Parameter]
+    public RenderFragment<RgfEntityParameters>? ChartTemplate { get; set; }
 }
