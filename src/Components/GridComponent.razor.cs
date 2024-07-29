@@ -39,16 +39,13 @@ public partial class GridComponent : ComponentBase, IDisposable
     {
         base.OnInitialized();
         GridParameters.EventDispatcher.Subscribe(RgfListEventKind.CreateRowData, OnCreateAttributes);
-        GridParameters.EventDispatcher.Subscribe(RgfListEventKind.ColumnSettingsChanged, (arg) => Recreate());
+        GridParameters.EventDispatcher.Subscribe(RgfListEventKind.ColumnSettingsChanged, OnColumnSettingsChanged);
         _initialized = true;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
-        if (firstRender)
-        {
-        }
         if (_initialized && _selfRef == null)
         {
             _selfRef = DotNetObjectReference.Create(this);
@@ -56,6 +53,8 @@ public partial class GridComponent : ComponentBase, IDisposable
             await AutoFitColumnsAsync();
         }
     }
+
+    private void OnColumnSettingsChanged(IRgfEventArgs<RgfListEventArgs> args) => Recreate();
 
     private void Recreate()
     {
@@ -71,6 +70,8 @@ public partial class GridComponent : ComponentBase, IDisposable
 
     public void Dispose()
     {
+        GridParameters.EventDispatcher.Unsubscribe(RgfListEventKind.CreateRowData, OnCreateAttributes);
+        GridParameters.EventDispatcher.Unsubscribe(RgfListEventKind.ColumnSettingsChanged, OnColumnSettingsChanged);
         if (_selfRef != null)
         {
             _selfRef.Dispose();
