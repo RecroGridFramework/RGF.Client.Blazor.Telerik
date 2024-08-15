@@ -50,41 +50,41 @@
                             @switch (prop.ClientDataType)
                             {
                                 case ClientDataType.Integer:
-                                    <TelerikNumericTextBox T="int?" @bind-Value="item.IntValue1" />
+                                    <TelerikNumericTextBox T="int?" @bind-Value="item.DynValue1.IntValue" />
                                     break;
 
                                 case ClientDataType.Decimal:
-                                    <TelerikNumericTextBox T="decimal?" @bind-Value="item.DecimalValue1" Arrows="false" />
+                                    <TelerikNumericTextBox T="decimal?" @bind-Value="item.DynValue1.DecimalValue" Arrows="false" />
                                     break;
 
                                 case ClientDataType.Double:
-                                    <TelerikNumericTextBox T="double?" @bind-Value="item.DoubleValue1" Arrows="false" />
+                                    <TelerikNumericTextBox T="double?" @bind-Value="item.DynValue1.DoubleValue" Arrows="false" />
                                     break;
 
                                 case ClientDataType.DateTime:
                                     if (prop.FormType == PropertyFormType.Date)
                                     {
-                                        <TelerikDatePicker T="DateTime?" @bind-Value="item.DateTimeValue1" />
+                                        <TelerikDatePicker T="DateTime?" @bind-Value="item.DynValue1.DateTimeValue" />
                                     }
                                     else
                                     {
-                                        <TelerikDateTimePicker T="DateTime?" @bind-Value="item.DateTimeValue1" />
+                                        <TelerikDateTimePicker T="DateTime?" @bind-Value="item.DynValue1.DateTimeValue" />
                                     }
                                     break;
 
                                 case ClientDataType.Boolean:
-                                    <TelerikCheckBox @bind-Value="item.BooleanValue1" />
+                                    <TelerikCheckBox @bind-Value="item.DynValue1.BooleanValue" />
                                     break;
 
                                 default:
                                     if (prop.FormType == PropertyFormType.DropDown || prop.FormType == PropertyFormType.ListBox)
                                     {
                                         <TelerikMultiSelect TValue="string" TItem="KeyValuePair<string, string>" ValueField="Key" TextField="Value" Width="11rem"
-                                                            Data="prop.Dictionary" Value="item.StringArray1.ToList()" ValueChanged="(value) => item.StringArray1 = value.ToArray()" />
+                                                            Data="prop.Dictionary" Value="item.DynValue1.StringArray.ToList()" ValueChanged="(value) => item.DynValue1.StringArray = value.ToArray()" />
                                     }
                                     else
                                     {
-                                        <TelerikTextBox @bind-Value="item.StringValue1" />
+                                        <TelerikTextBox @bind-Value="item.DynValue1.StringValue" />
                                     }
                                     break;
                             }
@@ -95,30 +95,30 @@
                                 @switch (prop.ClientDataType)
                                 {
                                     case ClientDataType.Integer:
-                                        <TelerikNumericTextBox T="int?" @bind-Value="item.IntValue2" />
+                                        <TelerikNumericTextBox T="int?" @bind-Value="item.DynValue2.IntValue" />
                                         break;
 
                                     case ClientDataType.Decimal:
-                                        <TelerikNumericTextBox T="decimal?" @bind-Value="item.DecimalValue2" Arrows="false" />
+                                        <TelerikNumericTextBox T="decimal?" @bind-Value="item.DynValue2.DecimalValue" Arrows="false" />
                                         break;
 
                                     case ClientDataType.Double:
-                                        <TelerikNumericTextBox T="double?" @bind-Value="item.DoubleValue2" Arrows="false" />
+                                        <TelerikNumericTextBox T="double?" @bind-Value="item.DynValue2.DoubleValue" Arrows="false" />
                                         break;
 
                                     case ClientDataType.DateTime:
                                         if (prop.FormType == PropertyFormType.Date)
                                         {
-                                            <TelerikDatePicker T="DateTime?" @bind-Value="item.DateTimeValue2" />
+                                            <TelerikDatePicker T="DateTime?" @bind-Value="item.DynValue2.DateTimeValue" />
                                         }
                                         else
                                         {
-                                            <TelerikDateTimePicker T="DateTime?" @bind-Value="item.DateTimeValue2" />
+                                            <TelerikDateTimePicker T="DateTime?" @bind-Value="item.DynValue2.DateTimeValue" />
                                         }
                                         break;
 
                                     default:
-                                        <TelerikTextBox @bind-Value="item.StringValue2" />
+                                        <TelerikTextBox @bind-Value="item.DynValue2.StringValue" />
                                         break;
                                 }
                             </div>
