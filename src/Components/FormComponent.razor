@@ -33,6 +33,7 @@
 
 @inject IJSRuntime _jsRuntime
 @inject IRecroDictService RecroDict
+@implements IDisposable
 @code {
 
     [Parameter, EditorRequired]
@@ -54,11 +55,11 @@
 
         FormParameters.ErrorCssClass = FormParameters.ErrorCssClass ?? "k-invalid k-form-error";
         FormParameters.ModifiedCssClass = FormParameters.ModifiedCssClass ?? "k-valid";
+        EntityParameters.FormParameters.EventDispatcher.Subscribe(RgfFormEventKind.ParametersSet, OnParametersSet);
     }
 
-    protected override void OnParametersSet()
+    private void OnParametersSet(IRgfEventArgs<RgfFormEventArgs> args)
     {
-        base.OnParametersSet();
         var rowIndex = FormParameters.FormViewKey.RowIndex;
         if (rowIndex != -1)
         {
@@ -113,5 +114,10 @@
     {
         ActiveTabIndex = index;
         PreviouslyActiveTabs.Add(index);
+    }
+
+    public void Dispose()
+    {
+        EntityParameters.FormParameters.EventDispatcher.Unsubscribe(RgfFormEventKind.ParametersSet, OnParametersSet);
     }
 }
