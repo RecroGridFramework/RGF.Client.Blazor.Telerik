@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
+using Recrovit.RecroGridFramework.Blazor.RgfApexCharts;
 using Recrovit.RecroGridFramework.Client.Blazor.TelerikUI.Components;
 using System.Reflection;
 
@@ -7,7 +8,7 @@ namespace Recrovit.RecroGridFramework.Client.Blazor.TelerikUI;
 
 public static class RGFClientBlazorTelerikConfiguration
 {
-    public static async Task InitializeRgfTelerikUIAsync(this IServiceProvider serviceProvider, string themeName = "kendo-theme-default/all", bool trial = false, bool loadResources = true)
+    public static async Task InitializeRgfTelerikUIAsync(this IServiceProvider serviceProvider, string themeName = "kendo-theme-default/all", bool trial = false, bool loadResources = true, bool shouldLoadBundledStyles = true)
     {
         RgfBlazorConfiguration.RegisterComponent<MenuComponent>(RgfBlazorConfiguration.ComponentType.Menu);
         RgfBlazorConfiguration.RegisterComponent<DialogComponent>(RgfBlazorConfiguration.ComponentType.Dialog);
@@ -16,11 +17,13 @@ public static class RGFClientBlazorTelerikConfiguration
         if (loadResources)
         {
             var jsRuntime = serviceProvider.GetRequiredService<IJSRuntime>();
-            await LoadResourcesAsync(jsRuntime, themeName, trial);
+            await LoadResourcesAsync(jsRuntime, themeName, trial, shouldLoadBundledStyles);
         }
+
+        await serviceProvider.InitializeRGFBlazorApexChartsAsync(loadResources, shouldLoadBundledStyles);
     }
 
-    public static async Task LoadResourcesAsync(IJSRuntime jsRuntime, string themeName, bool trial = false)
+    public static async Task LoadResourcesAsync(IJSRuntime jsRuntime, string themeName, bool trial = false, bool shouldLoadBundledStyles = true)
     {
         var libName = Assembly.GetExecutingAssembly().GetName().Name;
         string trialEx = trial ? ".Trial" : "";
@@ -37,6 +40,8 @@ public static class RGFClientBlazorTelerikConfiguration
         await jsRuntime.InvokeVoidAsync("eval", $"document.getElementById('{TelerikThemeId}')?.remove();");
         await jsRuntime.InvokeVoidAsync("eval", "document.getElementsByTagName('body')[0].classList.remove('k-body');");
         await jsRuntime.InvokeVoidAsync("eval", $"document.getElementById('{BlazorTelerikUiCss}')?.remove();");
+
+        await RgfApexChartsConfiguration.UnloadResourcesAsync(jsRuntime);
     }
 
     public static readonly string TelerikThemeId = "telerik-theme";

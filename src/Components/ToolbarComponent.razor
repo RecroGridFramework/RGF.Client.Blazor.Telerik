@@ -45,6 +45,13 @@
                                    OnClick="() => RgfToolbar.OnDelete()" />
                 }
             </ToolBarButtonGroup>
+            @if (RgfToolbar.EnableChart)
+            {
+                <ToolBarButtonGroup>
+                    <ToolBarButton Title="RecroChart" Icon="SvgIcon.ChartLineStacked"
+                                   OnClick="() => RgfToolbar.OnToolbarCommand(RgfToolbarEventKind.RecroChart)" />
+                </ToolBarButtonGroup>
+            }
             @if (RgfToolbar.SettingsMenu != null)
             {
                 <ToolBarTemplateItem>
