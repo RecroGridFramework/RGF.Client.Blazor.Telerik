@@ -13,7 +13,7 @@ else if (_menuItems != null)
                  TextField="@nameof(RgfMenu.Title)"
                  DisabledField="@nameof(RgfMenu.Disabled)"
                  SeparatorField="@nameof(RgfMenu.Separator)"
-                 UrlField="@(MenuParameters.MenuSelectionCallback == null ? nameof(RgfMenu.Command) : "")"
+                 UrlField="@(MenuParameters.OnMenuItemSelect == null ? nameof(RgfMenu.Command) : "")"
                  IconField="@nameof(RgfMenu.Icon)"
                  ItemsField="@nameof(RgfMenu.NestedMenuOrNull)"
                  OnClick="ItemSelected">
@@ -74,9 +74,9 @@ else if (_menuItems != null)
     {
         foreach (var item in menuItems)
         {
-            if (MenuParameters.MenuRenderCallback != null)
+            if (MenuParameters.OnMenuRender != null)
             {
-                await MenuParameters.MenuRenderCallback.Invoke(item);
+                await MenuParameters.OnMenuRender.Invoke(item);
             }
             if (item.NestedMenu?.Any() == true)
             {
@@ -88,9 +88,9 @@ else if (_menuItems != null)
 
     public async Task ItemSelected(RgfMenu args)
     {
-        if (MenuParameters.MenuSelectionCallback != null)
+        if (MenuParameters.OnMenuItemSelect != null)
         {
-            await MenuParameters.MenuSelectionCallback.Invoke(args);
+            await MenuParameters.OnMenuItemSelect.Invoke(args);
         }
     }
 }
