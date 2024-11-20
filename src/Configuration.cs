@@ -8,7 +8,7 @@ namespace Recrovit.RecroGridFramework.Client.Blazor.TelerikUI;
 
 public static class RGFClientBlazorTelerikConfiguration
 {
-    public static async Task InitializeRgfTelerikUIAsync(this IServiceProvider serviceProvider, string themeName = "kendo-theme-default/all", bool trial = false, bool loadResources = true, bool shouldLoadBundledStyles = true)
+    public static async Task InitializeRgfTelerikUIAsync(this IServiceProvider serviceProvider, string themeName = "kendo-theme-default/all", bool trial = false, bool loadResources = true)
     {
         RgfBlazorConfiguration.RegisterComponent<MenuComponent>(RgfBlazorConfiguration.ComponentType.Menu);
         RgfBlazorConfiguration.RegisterComponent<DialogComponent>(RgfBlazorConfiguration.ComponentType.Dialog);
@@ -17,13 +17,13 @@ public static class RGFClientBlazorTelerikConfiguration
         if (loadResources)
         {
             var jsRuntime = serviceProvider.GetRequiredService<IJSRuntime>();
-            await LoadResourcesAsync(jsRuntime, themeName, trial, shouldLoadBundledStyles);
+            await LoadResourcesAsync(jsRuntime, themeName, trial);
         }
 
-        await serviceProvider.InitializeRGFBlazorApexChartsAsync(loadResources, shouldLoadBundledStyles);
+        await serviceProvider.InitializeRGFBlazorApexChartsAsync(loadResources);
     }
 
-    public static async Task LoadResourcesAsync(IJSRuntime jsRuntime, string themeName, bool trial = false, bool shouldLoadBundledStyles = true)
+    public static async Task LoadResourcesAsync(IJSRuntime jsRuntime, string themeName, bool trial = false)
     {
         var libName = Assembly.GetExecutingAssembly().GetName().Name;
         string trialEx = trial ? ".Trial" : "";
