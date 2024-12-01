@@ -8,7 +8,7 @@
                          Resizable="true" Sortable="true" SortMode="SortMode.Multiple" Reorderable="true"
                          OnRowRender="OnRowRender"
                          OnStateInit="OnStateInit" OnStateChanged="OnStateChanged"
-                         SelectionMode="GridSelectionMode.Single" SelectedItems="RgfGrid.SelectedItems"
+                         SelectionMode="GridSelectionMode.Single" SelectedItems="RgfGrid.SelectedRowsData"
                          OnRowClick="OnRowClick" OnRowDoubleClick="OnRowDoubleClick">
                 <GridColumns>
                     @foreach (var prop in EntityDesc.SortedVisibleColumns)

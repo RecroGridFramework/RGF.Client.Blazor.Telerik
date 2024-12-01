@@ -33,11 +33,10 @@ public partial class GridComponent : ComponentBase, IDisposable
 
     private GridColumnState[] _columnStates { get; set; } = new GridColumnState[0];
 
-    public IRgListHandler ListHandler => Manager.ListHandler;
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        GridParameters.EnableMultiRowSelection = false;
         GridParameters.EventDispatcher.Subscribe(RgfListEventKind.CreateRowData, OnCreateAttributes);
         GridParameters.EventDispatcher.Subscribe(RgfListEventKind.ColumnSettingsChanged, OnColumnSettingsChanged);
         _initialized = true;
@@ -130,7 +129,7 @@ public partial class GridComponent : ComponentBase, IDisposable
 
         if (recreate)
         {
-            await ListHandler.SetVisibleColumnsAsync(columns);
+            await Manager.ListHandler.SetVisibleColumnsAsync(columns);
             Recreate();
         }
         else
@@ -216,14 +215,17 @@ public partial class GridComponent : ComponentBase, IDisposable
     protected virtual async Task OnRowClick(GridRowClickEventArgs args)
     {
         var rowData = (RgfDynamicDictionary)args.Item;
-        if (_rgfGridRef.SelectedItems.SingleOrDefault() == rowData)
+        if (_rgfGridRef.SelectedItems.Any())
         {
+            int idx = Manager.ListHandler.GetAbsoluteRowIndex(rowData);
+            bool deselect = _rgfGridRef.SelectedItems.ContainsKey(idx);
             await _rgfGridRef.RowDeselectHandlerAsync(rowData);
+            if (deselect)
+            {
+                return;
+            }
         }
-        else
-        {
-            await _rgfGridRef.RowSelectHandlerAsync(rowData);
-        }
+        await _rgfGridRef.RowSelectHandlerAsync(rowData);
     }
 
     protected virtual Task OnRowDoubleClick(GridRowClickEventArgs args) => _rgfGridRef.OnRecordDoubleClickAsync((RgfDynamicDictionary)args.Item);
