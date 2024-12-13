@@ -5,26 +5,30 @@
     <FooterTemplate Context="RgfFilterComp">
         <div class="flex-container">
             <div>
-                <label>Query timeout</label>
-                <TelerikNumericTextBox T="int?" @bind-Value="RgfFilterComp.PredefinedFilter.QueryTimeout" Arrows="false" Width="3rem" Min="0" />
+                <label>@RecroDict.GetRgfUiString("SQLTimeout"):</label>
+                <TelerikNumericTextBox T="int?" @bind-Value="RgfFilterComp.FilterSettings.SQLTimeout" Arrows="false" Width="3rem" Min="0" />
 
-                <TelerikComboBox TValue="string" TItem="string" Value="RgfFilterComp.PredefinedFilterName"
-                                 Data="RgfFilterComp.FilterHandler.PredefinedFilters.Select(e=> e.Name)" AllowCustom="true"
-                                 ValueChanged="OnValueChanged" Width="13rem" AdaptiveMode="AdaptiveMode.Auto">
+                <TelerikComboBox TValue="string" TItem="string" Value="RgfFilterComp.FilterSettings.SettingsName"
+                                 Data="RgfFilterComp.FilterHandler.PredefinedFilters.Select(e=> e.SettingsName)" AllowCustom="true"
+                                 ValueChanged="OnValueChanged" Width="15rem" AdaptiveMode="AdaptiveMode.Auto">
                     <ComboBoxSettings>
                         <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
                     </ComboBoxSettings>
                 </TelerikComboBox>
 
-                <label>@RecroDict.GetRgfUiString("Public")</label>
-                <TelerikCheckBox @bind-Value=RgfFilterComp.PredefinedFilter.IsGlobal Enabled="RgfFilterComp.IsPredefinedFilterAdmin" />
+                <TelerikComboBox ValueField="Key" TextField="Value" @bind-Value="RgfFilterComp.FilterSettings.RoleId" Data="RgfFilterComp.VisibleRoles"
+                                 Enabled="!(RgfFilterComp.FilterSettings.IsReadonly == true || !RgfFilterComp.IsPublicFilterSettingAllowed || string.IsNullOrEmpty(RgfFilterComp.FilterSettings.SettingsName))" Width="13rem">
+                    <ComboBoxSettings>
+                        <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
+                    </ComboBoxSettings>
+                </TelerikComboBox>
 
                 <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Icon="SvgIcon.Save" Title="@RecroDict.GetRgfUiString("Save")"
-                               Enabled="!string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Name) && (RgfFilterComp.IsPredefinedFilterAdmin || !RgfFilterComp.PredefinedFilter.IsGlobal)"
+                               Enabled="!(RgfFilterComp.FilterSettings.IsReadonly == true || string.IsNullOrEmpty(RgfFilterComp.FilterSettings.SettingsName) || !RgfFilterComp.IsPublicFilterSettingAllowed && RgfFilterComp.FilterSettings.RoleId != null)"
                                OnClick="() => RgfFilterComp.OnSavePredefinedFilter()" />
 
                 <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Outline" Icon="SvgIcon.Trash" Title="@RecroDict.GetRgfUiString("Delete")"
-                               Enabled="!string.IsNullOrEmpty(RgfFilterComp.PredefinedFilter.Key) && (RgfFilterComp.IsPredefinedFilterAdmin || !RgfFilterComp.PredefinedFilter.IsGlobal)"
+                               Enabled="!(RgfFilterComp.FilterSettings.IsReadonly == true || RgfFilterComp.FilterSettings.FilterSettingsId == null || !RgfFilterComp.IsPublicFilterSettingAllowed && RgfFilterComp.FilterSettings.RoleId != null)"
                                OnClick="() => RgfFilterComp.OnDeletePredefinedFilter()" />
             </div>
             <div class="k-flex-layout k-justify-content-between k-mt-lg">
@@ -53,8 +57,8 @@
 
     private void OnValueChanged(string value)
     {
-        _rgfFilterRef.PredefinedFilterName = value;
-        var filter = _rgfFilterRef.FilterHandler.PredefinedFilters.FirstOrDefault(e => e.Name == value);
-        _rgfFilterRef.OnSetPredefinedFilter(filter?.Key, value);
+        _rgfFilterRef.FilterSettings.SettingsName = value;
+        var filter = _rgfFilterRef.FilterHandler.PredefinedFilters.FirstOrDefault(e => e.SettingsName == value);
+        _rgfFilterRef.OnSetPredefinedFilter(filter?.FilterSettingsId, value);
     }
 }
