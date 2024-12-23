@@ -1,5 +1,4 @@
-﻿
-<RgfGridComponent @ref="_rgfGridRef" EntityParameters="EntityParameters" GridComponent="this">
+﻿<RgfGridComponent @ref="_rgfGridRef" EntityParameters="EntityParameters" GridComponent="this">
     <GridTemplate Context="RgfGrid">
         @if (_initialized)
         {
@@ -18,7 +17,7 @@
                                     Width="@(prop.ColWidth > 0 ? $"{prop.ColWidth}px" : null)"
                                     OnCellRender="(arg) => OnCellRender(prop, arg)">
                             <Template>
-                                @RgfGrid.CreateGridColumn(prop, (RgfDynamicDictionary)context)
+                                @RgfGrid.RenderContentItem(prop, (RgfDynamicDictionary)context)
                             </Template>
                         </GridColumn>
                     }
@@ -28,7 +27,7 @@
     </GridTemplate>
 
     <ColumnSettingsTemplate>
-        <GridColumnSettingsComponent BaseGridComponent="context" />
+        <GridColumnSettingsComponent BaseDataComponent="context" />
     </ColumnSettingsTemplate>
 </RgfGridComponent>
 
