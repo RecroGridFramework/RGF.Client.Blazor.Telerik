@@ -27,12 +27,12 @@ public static class RGFClientBlazorTelerikConfiguration
     {
         var libName = Assembly.GetExecutingAssembly().GetName().Name;
         string trialEx = trial ? ".Trial" : "";
-        await jsRuntime.InvokeVoidAsync("import", $"{RgfClientConfiguration.AppRootPath}_content/Telerik.UI.for.Blazor{trialEx}/js/telerik-blazor.js");
+        await jsRuntime.InvokeVoidAsync("import", $"{RgfClientConfiguration.AppRootPath}/_content/Telerik.UI.for.Blazor{trialEx}/js/telerik-blazor.js");
         await jsRuntime.InvokeVoidAsync("eval", "document.getElementsByTagName('body')[0].classList.add('k-body');");
-        await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.AddStyleSheetLink", $"{RgfClientConfiguration.AppRootPath}_content/Telerik.UI.for.Blazor{trialEx}/css/{themeName}.css", false, TelerikThemeId);
-        await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.AddStyleSheetLink", $"{RgfClientConfiguration.AppRootPath}_content/{libName}/css/telerikui-styles.css", false, BlazorTelerikUiCss);
+        await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.AddStyleSheetLink", $"{RgfClientConfiguration.AppRootPath}/_content/Telerik.UI.for.Blazor{trialEx}/css/{themeName}.css", false, TelerikThemeId);
+        await jsRuntime.InvokeVoidAsync("Recrovit.LPUtils.AddStyleSheetLink", $"{RgfClientConfiguration.AppRootPath}/_content/{libName}/css/telerikui-styles.css", false, BlazorTelerikUiCss);
 
-        await jsRuntime.InvokeVoidAsync("import", $"{RgfClientConfiguration.AppRootPath}_content/{libName}/scripts/recrovit-rgf-blazor-telerik.js");
+        await jsRuntime.InvokeVoidAsync("import", $"{RgfClientConfiguration.AppRootPath}/_content/{libName}/scripts/recrovit-rgf-blazor-telerik.js");
     }
 
     public static async Task UnloadResourcesAsync(IJSRuntime jsRuntime)

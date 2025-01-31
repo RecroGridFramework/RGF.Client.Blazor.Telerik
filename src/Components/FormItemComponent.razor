@@ -168,7 +168,7 @@
     protected RgfProperty PropertyDesc => Property.PropertyDesc;
     private RenderFragment? _embeddedGrid;
 
-    protected string Id { get; set; } = DynamicComponentWrapper.GetNextId();
+    protected string Id { get; set; } = RgfComponentWrapper.GetNextId();
     protected virtual List<IEditorTool> _telerikEditorTools
     {
         get
