@@ -1,6 +1,6 @@
 ﻿<TelerikWindow @ref="_window"
                Visible="@_visible"
-               Modal="@DialogParameters.IsModal"
+               Modal="true"
                Draggable="true"
                Resizable="DialogParameters.Resizable ?? false"
                Class="@DialogParameters.CssClass"
@@ -54,7 +54,6 @@
 
     private TelerikWindow _window { get; set; } = default!;
     private bool _visible { get; set; } = true;
-    private bool _closed { get; set; }
     private bool _isDestroyed = false;
     private string? _top { get; set; }
     private string? _left { get; set; }
@@ -120,41 +119,29 @@
                 _left = p[3].ToString() + "px";
             }
         }
-        DialogParameters.Destroy = Destroy;
+        DialogParameters.EventDispatcher.Subscribe(RgfDialogEventKind.Destroy, OnDestroyAsync);
     }
 
-    private void Destroy()
+    private async Task OnDestroyAsync(IRgfEventArgs<RgfDialogEventArgs> args)
     {
         if (!_isDestroyed)
         {
             if (!string.IsNullOrEmpty(DialogParameters.UniqueName))
             {
-                _ = _jsRuntime.InvokeVoidAsync(RGFClientBlazorTelerikConfiguration.JsBlazorTelerikUiNamespace + ".Dialog.saveDialogPos", DialogParameters.UniqueName, _window.Width, _window.Height, _window.Top, _window.Left);
+                await _jsRuntime.InvokeVoidAsync(RGFClientBlazorTelerikConfiguration.JsBlazorTelerikUiNamespace + ".Dialog.saveDialogPos", DialogParameters.UniqueName, _window.Width, _window.Height, _window.Top, _window.Left);
             }
             _isDestroyed = true;
         }
     }
 
-    private void OnClose()
-    {
-        if (!_closed && DialogParameters.OnClose != null)
-        {
-            var cancel = DialogParameters.OnClose.Invoke() == false;
-            if (cancel)
-            {
-                _visible = true;
-                return;
-            }
-        }
-        _closed = true;
-    }
+    private Task OnClose() => DialogParameters.EventDispatcher.RaiseEventAsync(RgfDialogEventKind.Close, this);
 
     private void OnStateChanged(WindowState state) => _window.State = WindowState.Default;
     private void OnVisibleChanged(bool visible)
     {
         if (!visible)
         {
-            OnClose();
+            _ = OnClose();
         }
     }
 }
