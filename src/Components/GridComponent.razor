@@ -10,7 +10,7 @@
                          SelectionMode="GridSelectionMode.Single" SelectedItems="RgfGrid.SelectedRowsData"
                          OnRowClick="OnRowClick" OnRowDoubleClick="OnRowDoubleClick">
                 <GridColumns>
-                    @foreach (var prop in EntityDesc.SortedVisibleColumns)
+                    @foreach (var prop in Manager.ListHandler.SortedVisibleColumns)
                     {
                         <GridColumn Field="@prop.Alias" Id="@prop.ClientName" Title="@prop.ColTitle"
                                     Sortable="@prop.Orderable"
