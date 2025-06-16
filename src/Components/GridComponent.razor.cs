@@ -83,7 +83,7 @@ public partial class GridComponent : ComponentBase, IDisposable
         //https://docs.telerik.com/blazor-ui/knowledge-base/grid-autofit-columns
         AutoFitFlag = true;
         await Task.Delay(200);
-        var cols = EntityDesc.SortedVisibleColumns.Where(e => e.ColWidth == 0).Select(e => e.ClientName).ToArray();
+        var cols = Manager.ListHandler.SortedVisibleColumns.Where(e => e.ColWidth == 0).Select(e => e.ClientName).ToArray();
         await _gridRef.AutoFitColumnsAsync(cols);
         _columnStates = _gridRef.GetState().ColumnStates.ToArray();
         AutoFitFlag = false;
@@ -99,7 +99,7 @@ public partial class GridComponent : ComponentBase, IDisposable
 
     private async Task OnStateChanged(GridStateEventArgs<RgfDynamicDictionary> args)
     {
-        var columns = Manager.EntityDesc.SortedVisibleColumns.Select(e => new GridColumnSettings(e)).ToArray();
+        var columns = Manager.ListHandler.SortedVisibleColumns.Select(e => new RgfGridColumnSettings(e)).ToArray();
         bool recreate = false;
         foreach (var item in args.GridState.ColumnStates)
         {
@@ -114,12 +114,12 @@ public partial class GridComponent : ComponentBase, IDisposable
                     {
                         if (col.Width != item.Width)
                         {
-                            prop.ColWidth = Convert.ToInt32(item.Width.Replace("px", ""));
+                            prop.ColWidthOrNull = Convert.ToInt32(item.Width.Replace("px", ""));
                             recreate = true;
                         }
                         if (col.Index != item.Index)
                         {
-                            prop.ColPos = item.Index + 1;
+                            prop.ColPosOrNull = item.Index + 1;
                             recreate = true;
                         }
                     }
@@ -144,7 +144,7 @@ public partial class GridComponent : ComponentBase, IDisposable
     {
         _logger.LogDebug("CreateAttributes");
         var rowData = arg.Args.Data ?? throw new ArgumentException();
-        foreach (var prop in EntityDesc.SortedVisibleColumns)
+        foreach (var prop in Manager.ListHandler.SortedVisibleColumns)
         {
             string? propClass = null;
             if (prop.FormType == PropertyFormType.CheckBox)
@@ -185,7 +185,7 @@ public partial class GridComponent : ComponentBase, IDisposable
         }
     }
 
-    private void OnCellRender(RgfProperty prop, GridCellRenderEventArgs args)
+    private void OnCellRender(IRgfProperty prop, GridCellRenderEventArgs args)
     {
         var rowData = (RgfDynamicDictionary)args.Item;
         var attributes = rowData.Get<RgfDynamicDictionary>("__attributes");
