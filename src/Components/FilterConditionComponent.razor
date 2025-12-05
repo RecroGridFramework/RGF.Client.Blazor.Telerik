@@ -5,7 +5,7 @@
         <li>
             <div class="k-display-flex">
                 <div class="k-p-1">
-                    <TelerikComboBox ValueField="Key" TextField="Value" @bind-Value="item.LogicalOperator" Enabled="idx != 0" Data="LogicalOperators" ClearButton="false" Width="78px">
+                    <TelerikComboBox ValueField="Key" TextField="Value" @bind-Value="item.LogicalOperator" Enabled="idx != 0" Data="LogicalOperators" ShowClearButton="false" Width="78px">
                         <ComboBoxSettings>
                             <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
                         </ComboBoxSettings>
@@ -29,7 +29,7 @@
                 {
                     <div class="k-p-1">
                         <TelerikComboBox TValue="int" TItem="KeyValuePair<int, string>" ValueField="Key" TextField="Value"
-                                         Value="item.PropertyId" Data="Columns" ValueChanged="(value) => OnChangeProperty(value, item)" ClearButton="false">
+                                         Value="item.PropertyId" Data="Columns" ValueChanged="(value) => OnChangeProperty(value, item)" ShowClearButton="false">
                             <ComboBoxSettings>
                                 <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
                             </ComboBoxSettings>
@@ -37,7 +37,7 @@
                     </div>
                     <div class="k-p-1">
                         <TelerikComboBox TValue="RgfFilter.QueryOperator" TItem="KeyValuePair<RgfFilter.QueryOperator, string>" ValueField="Key" TextField="Value"
-                                         Value="item.QueryOperator" Data="GetQueryOperators(item)" ValueChanged="(value) => OnChangeQueryOperator(value, item)" ClearButton="false">
+                                         Value="item.QueryOperator" Data="GetQueryOperators(item)" ValueChanged="(value) => OnChangeQueryOperator(value, item)" ShowClearButton="false">
                             <ComboBoxSettings>
                                 <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
                             </ComboBoxSettings>

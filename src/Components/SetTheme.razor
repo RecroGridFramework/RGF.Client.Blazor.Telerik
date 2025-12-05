@@ -1,5 +1,5 @@
 ﻿<TelerikComboBox ValueField="Key" TextField="Value" @bind-Value="@ThemeName" Data="Themes" OnChange="OnThemeChange"
-                 ClearButton="false" Width="auto" AdaptiveMode="AdaptiveMode.Auto" >
+                 ShowClearButton="false" Width="auto" AdaptiveMode="AdaptiveMode.Auto">
     <ComboBoxSettings>
         <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
     </ComboBoxSettings>
@@ -28,7 +28,7 @@
         string link = (string)arg;
         if (!link.StartsWith("https"))
         {
-            link = $"{RgfClientConfiguration.AppRootPath}/_content/Telerik.UI.for.Blazor.Trial/css/{link}.css";
+            link = $"{RgfClientConfiguration.AppRootPath}/_content/Telerik.UI.for.Blazor/css/{link}.css";
         }
         _module?.InvokeVoidAsync("setTheme", link);
     }
