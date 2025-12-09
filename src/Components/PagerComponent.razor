@@ -1,6 +1,6 @@
 ﻿<RgfPagerComponent @ref="_rgfPagerRef" EntityParameters="EntityParameters">
     <PagerTemplate Context="RgfPager">
-        <TelerikToolBar Class="toolbar-size" Adaptive="false">
+        <TelerikToolBar Class="toolbar-size" OverflowMode="ToolBarOverflowMode.None">
             @if (RgfPager.ItemCount != 0)
             {
                 <ToolBarButton Title="@RecroDict.GetRgfUiString("First")" Icon="SvgIcon.CaretAltToLeft" Enabled="RgfPager.CurrentPage > 1" OnClick="OnShowFirstPage" />
@@ -28,7 +28,7 @@
                 {
                     <ToolBarTemplateItem>
                         <label>@RecroDict.GetRgfUiString("ItemsPerPage")</label>
-                        <TelerikComboBox TValue="string" TItem="string" ClearButton="false" Data="@(new string[] { "5", "10", "15", "25" })"
+                        <TelerikComboBox TValue="string" TItem="string" ShowClearButton="false" Data="@(new string[] { "5", "10", "15", "25" })"
                                          Value="@PageSize" ValueExpression="() => PageSize" ValueChanged="RgfPager.PageSizeChanging"
                                          AllowCustom="true" Width="4.5rem" AdaptiveMode="AdaptiveMode.Auto">
                             <ComboBoxSettings>

@@ -76,7 +76,7 @@
                     {
                         <TelerikComboBox TValue="string" TItem="RgfForm.DictionaryItem" ValueField="Key" TextField="Value"
                                          Data="Property.AvailableItems.Where(e=> !string.IsNullOrEmpty(e.Value))" @bind-Value="ItemData.StringValue"
-                                         ReadOnly="Property.Readonly" Enabled="!Property.Disabled" ClearButton="Property.AvailableItems.Any(e=> string.IsNullOrEmpty(e.Value)) == true"
+                                         ReadOnly="Property.Readonly" Enabled="!Property.Disabled" ShowClearButton="Property.AvailableItems.Any(e=> string.IsNullOrEmpty(e.Value)) == true"
                                          Class="@formItemCssClass" Id="@Id">
                             <ComboBoxSettings>
                                 <ComboBoxPopupSettings Height="auto" MaxHeight="50vh" />
